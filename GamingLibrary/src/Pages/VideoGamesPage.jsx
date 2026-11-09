@@ -1,0 +1,1 @@
+// src/Pages/VideoGamesPage.jsx

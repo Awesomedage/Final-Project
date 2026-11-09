@@ -1,1 +1,1 @@
-f
+// src/Pages/BoardGamesPage.jsx
