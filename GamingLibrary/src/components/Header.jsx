@@ -23,8 +23,6 @@ function Header({ onSearch }) {
       <h1 className="header-title">Gaming Library</h1>
       <nav className="header-nav">
         <Link to="/" className="header-link">Home</Link>
-        <Link to="/video-games" className="header-link">Video Games</Link>
-        <Link to="/board-games" className="header-link">Board Games</Link>
         <Link to="/saved" className="header-link">Saved Games</Link>
       </nav>
       <div className="header-search">

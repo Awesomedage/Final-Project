@@ -5,7 +5,7 @@ import Hero from "../components/Hero";
 import GameGrid from "../components/GameGrid";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { getSteamGames } from "../services/Steam";
-import { searchBoardGames } from "../services/BoardGame";
+import { searchBoardGames, getFallbackBoardGames } from "../services/BoardGame";
 
 function HomePage() {
   const [videoGames, setVideoGames] = useState([]);
@@ -20,17 +20,9 @@ function HomePage() {
         const steamData = await getSteamGames();
         setVideoGames(steamData.slice(0, 6)); // Top 6 video games
 
-        // Fetch board games (using a popular query like 'catan' or general search)
-        const bggData = await searchBoardGames("catan");
-        // Simple mock transformation for Board Game items display
-        setBoardGames([
-          { id: "13", name: "Catan", type: "Board Game", rating: "7.1" },
-          { id: "30549", name: "Pandemic", type: "Board Game", rating: "7.5" },
-          { id: "170416", name: "Scythe", type: "Board Game", rating: "8.2" },
-          { id: "167791", name: "Terraforming Mars", type: "Board Game", rating: "8.4" },
-          { id: "224517", name: "Brass: Birmingham", type: "Board Game", rating: "8.6" },
-          { id: "233090", name: "Gloomhaven", type: "Board Game", rating: "8.7" }
-        ]);
+        // Fetch board games or use the rich fallback dataset with images
+        await searchBoardGames("catan");
+        setBoardGames(getFallbackBoardGames().slice(0, 6));
       } catch (err) {
         console.error("Error fetching homepage games:", err);
       } finally {
@@ -48,7 +40,7 @@ function HomePage() {
         subtitle="Discover and explore your favorite games!" 
       />
 
-      {/* Navigation Buttons to Jump to Specific Categories */}
+      {/* Navigation Buttons */}
       <div className="category-nav-buttons" style={{ display: "flex", justifyContent: "center", gap: "1rem", margin: "1.5rem 0" }}>
         <Link to="/video-games" className="btn btn-primary" style={{ padding: "0.75rem 1.5rem", borderRadius: "6px", textDecoration: "none", background: "#007bff", color: "#fff" }}>
           Video Games
