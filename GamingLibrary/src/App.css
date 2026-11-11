@@ -182,3 +182,22 @@
     border-right-color: var(--border);
   }
 }
+
+/* Loading Spinner Styles */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 24px;
+  color: var(--accent);
+}
+
+.spinner {
+  border: 4px white solid;
+  border-top: 4px red solid;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}

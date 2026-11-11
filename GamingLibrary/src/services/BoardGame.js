@@ -1,14 +1,38 @@
 // src/services/BoardGame.js
+
 export async function searchBoardGames(query) {
-  const response = await fetch(
-    `https://boardgamegeek.com/xmlapi2/search?query=${query}&type=boardgame`
-  );
+  try {
+    // Using the Vite proxy path to bypass browser CORS restrictions
+    const response = await fetch(
+      `/bgg-api/xmlapi2/search?query=${encodeURIComponent(query)}&type=boardgame`
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch board games");
+    if (!response.ok) {
+      throw new Error("Failed to fetch board games");
+    }
+
+    const xmlText = await response.text();
+    return xmlText;
+  } catch (error) {
+    console.error("Error searching board games:", error);
+    throw error;
   }
+}
 
-  const xmlText = await response.text();
+export async function getBoardGameDetails(gameId) {
+  try {
+    const response = await fetch(
+      `/bgg-api/xmlapi2/thing?id=${gameId}`
+    );
 
-  return xmlText;
+    if (!response.ok) {
+      throw new Error("Failed to fetch board game details");
+    }
+
+    const xmlText = await response.text();
+    return xmlText;
+  } catch (error) {
+    console.error("Error fetching board game details:", error);
+    throw error;
+  }
 }
