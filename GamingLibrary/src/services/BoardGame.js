@@ -1,7 +1,10 @@
 // src/services/BoardGame.js
 
+const BGG_KEY = import.meta.env.VITE_BOARD_GAME_KEY;
+
 export async function searchBoardGames(query) {
   try {
+    // If your BGG usage requires the key/token as a query param, you can append it like &token=...
     const response = await fetch(
       `https://boardgamegeek.com/xmlapi2/search?query=${encodeURIComponent(query)}&type=boardgame`
     );

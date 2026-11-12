@@ -1,8 +1,21 @@
 // src/Pages/SavedPage.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import GameGrid from "../components/GameGrid";
 
-function SavedPage({ savedGames = [] }) {
+function SavedPage() {
+  const [savedGames, setSavedGames] = useState([]);
+
+  useEffect(() => {
+    // Load saved games from localStorage safely
+    try {
+      const saved = JSON.parse(localStorage.getItem("savedGames")) || [];
+      setSavedGames(saved);
+    } catch (err) {
+      console.error("Error loading saved games from localStorage:", err);
+      setSavedGames([]);
+    }
+  }, []);
+
   return (
     <div className="saved-page" style={{ padding: "1.5rem" }}>
       <h1>Your Saved Games</h1>
