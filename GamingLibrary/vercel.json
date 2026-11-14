@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/steam-api/:path*",
+      "destination": "https://store.steampowered.com/:path*"
+    },
+    {
+      "source": "/bgg-api/:path*",
+      "destination": "https://boardgamegeek.com/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
