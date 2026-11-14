@@ -6,8 +6,9 @@ import GameGrid from "../components/GameGrid";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { getSteamGames } from "../services/Steam";
 import { searchBoardGames, getFallbackBoardGames } from "../services/BoardGame";
+import "./HomePage.css";
 
-function HomePage() {
+function HomePage({ searchResults }) {
   const [videoGames, setVideoGames] = useState([]);
   const [boardGames, setBoardGames] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,13 +19,14 @@ function HomePage() {
         setLoading(true);
         // Fetch Steam video games
         const steamData = await getSteamGames();
-        setVideoGames(steamData.slice(0, 6)); // Top 6 video games
+        setVideoGames(steamData);
 
-        // Fetch board games or use the rich fallback dataset with images
-        await searchBoardGames("catan");
-        setBoardGames(getFallbackBoardGames().slice(0, 6));
+        // Fetch board games via the live search service (defaults to Catan query)
+        const boardData = await searchBoardGames("");
+        setBoardGames(boardData && boardData.length > 0 ? boardData : getFallbackBoardGames());
       } catch (err) {
         console.error("Error fetching homepage games:", err);
+        setBoardGames(getFallbackBoardGames());
       } finally {
         setLoading(false);
       }
@@ -33,6 +35,14 @@ function HomePage() {
     fetchTopGames();
   }, []);
 
+  if (loading) {
+    return (
+      <main className="home-page home-page-loading">
+        <LoadingSpinner />
+      </main>
+    );
+  }
+
   return (
     <div className="home-page">
       <Hero 
@@ -40,31 +50,44 @@ function HomePage() {
         subtitle="Discover and explore your favorite games!" 
       />
 
-      {/* Navigation Buttons */}
-      <div className="category-nav-buttons" style={{ display: "flex", justifyContent: "center", gap: "1rem", margin: "1.5rem 0" }}>
-        <Link to="/video-games" className="btn btn-primary" style={{ padding: "0.75rem 1.5rem", borderRadius: "6px", textDecoration: "none", background: "#007bff", color: "#fff" }}>
+      <div className="category-nav-buttons">
+        <Link to="/video-games" className="btn btn-primary category-btn">
           Video Games
         </Link>
-        <Link to="/board-games" className="btn btn-secondary" style={{ padding: "0.75rem 1.5rem", borderRadius: "6px", textDecoration: "none", background: "#6c757d", color: "#fff" }}>
+        <Link to="/board-games" className="btn btn-secondary category-btn">
           Board Games
         </Link>
       </div>
 
-      {loading ? (
-        <LoadingSpinner />
-      ) : (
-        <div className="homepage-sections" style={{ padding: "0 1rem" }}>
-          <section className="top-video-games" style={{ marginBottom: "2.5rem" }}>
-            <h2>Top Video Games</h2>
-            <GameGrid games={videoGames} />
-          </section>
+      <div className="homepage-sections">
+        {searchResults ? (
+          /* When searching, show single search results view like the movie app reference */
+          <div className="search-results-section">
+            <div className="content-header">
+              <h2>Search Results</h2>
+              <p>Found {searchResults.length} matching title(s)</p>
+            </div>
+            {searchResults.length > 0 ? (
+              <GameGrid games={searchResults} />
+            ) : (
+              <p className="no-search-results">No games found matching your search.</p>
+            )}
+          </div>
+        ) : (
+          /* When not searching, keep your separate categorized sections intact */
+          <>
+            <section className="top-video-games">
+              <h2>Top Video Games</h2>
+              <GameGrid games={videoGames.slice(0, 6)} />
+            </section>
 
-          <section className="top-board-games">
-            <h2>Top Board Games</h2>
-            <GameGrid games={boardGames} />
-          </section>
-        </div>
-      )}
+            <section className="top-board-games">
+              <h2>Top Board Games</h2>
+              <GameGrid games={boardGames.slice(0, 6)} />
+            </section>
+          </>
+        )}
+      </div>
     </div>
   );
 }

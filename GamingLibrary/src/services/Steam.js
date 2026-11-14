@@ -2,8 +2,8 @@
 
 export async function getSteamGames() {
     try {
-        // Fetching featured/trending games directly from Steam's public featured endpoint
-        const response = await fetch("https://store.steampowered.com/api/featured/");
+        // Fetching through the local Vite dev proxy to bypass browser CORS blocks
+        const response = await fetch("/steam-api/api/featured/");
         
         if (!response.ok) {
             throw new Error('Failed to fetch Steam games');
@@ -11,8 +11,7 @@ export async function getSteamGames() {
 
         const data = await response.json();
         
-        // Steam's featured endpoint returns categorized lists (like large_capsules, featured_win, etc.)
-        // Let's combine them into a clean single array for your game grid
+        // Steam's featured endpoint returns categorized lists (like featured_win, etc.)
         const featuredList = data.featured_win || [];
         const formattedGames = featuredList.map(game => ({
             id: game.id,
@@ -25,15 +24,16 @@ export async function getSteamGames() {
 
         return formattedGames.length > 0 ? formattedGames : getFallbackGames();
     } catch (error) {
-        console.warn("API fetch blocked or failed, using fallback game list for MVP:", error);
+        console.warn("Proxy fetch failed, using fallback game list for MVP:", error);
         return getFallbackGames();
     }
 }
 
 export async function getSteamGameDetails(appId) {
     try {
+        // Fetching details through the local Vite proxy
         const response = await fetch(
-            `https://store.steampowered.com/api/appdetails?appids=${appId}`
+            `/steam-api/api/appdetails?appids=${appId}`
         );
 
         if (!response.ok) {
@@ -43,7 +43,17 @@ export async function getSteamGameDetails(appId) {
         const data = await response.json();
         return data[appId]?.data || null;
     } catch (error) {
-        console.error("Error fetching Steam game details:", error);
+        console.error("Error fetching Steam game details, checking fallback:", error);
+        // Fallback lookup if proxy/network fails
+        const fallbackList = getFallbackGames();
+        const found = fallbackList.find(game => String(game.id) === String(appId));
+        if (found) {
+            return {
+                name: found.name,
+                short_description: "This is a popular video game loaded from your fallback library catalog.",
+                header_image: found.header_image,
+            };
+        }
         return null;
     }
 }

@@ -1,0 +1,59 @@
+/* src/Pages/HomePage.css */
+
+.home-page-loading {
+  padding: 2rem;
+}
+
+.category-nav-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.category-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #fff;
+}
+
+.category-btn.btn-primary {
+  background: #007bff;
+}
+
+.category-btn.btn-secondary {
+  background: #6c757d;
+}
+
+.homepage-sections {
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .homepage-sections {
+    padding: 0 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .homepage-sections {
+    padding: 0 3rem;
+  }
+}
+
+.content-header {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.no-search-results {
+  text-align: center;
+  padding: 2rem;
+}
+
+.top-video-games,
+.top-board-games {
+  margin-bottom: 2.5rem;
+}

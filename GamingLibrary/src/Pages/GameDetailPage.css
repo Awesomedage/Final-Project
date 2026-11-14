@@ -1,0 +1,50 @@
+/* src/Pages/GameDetailPage.css */
+
+.game-detail-page {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.game-detail-container {
+  text-align: center;
+}
+
+.game-detail-title {
+  margin-bottom: 1rem;
+}
+
+.game-image-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.game-detail-img {
+  max-width: 100%;
+  max-height: 400px;
+  border-radius: 8px;
+  object-fit: contain;
+  box-sizing: border-box;
+}
+
+.game-type-text {
+  margin-bottom: 1rem;
+}
+
+.game-description {
+  text-align: left;
+  margin-top: 1.5rem;
+  line-height: 1.6;
+}

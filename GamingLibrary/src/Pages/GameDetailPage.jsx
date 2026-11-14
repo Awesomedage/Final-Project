@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getSteamGameDetails } from "../services/Steam";
 import { getBoardGameDetails } from "../services/BoardGame";
+import "./GameDetailPage.css";
 
 function GameDetailPage() {
   const { id } = useParams();
@@ -29,13 +30,13 @@ function GameDetailPage() {
           return;
         }
 
-        // 2. If Steam fails/returns null, try Board Game details
+        // 2. Try fetching Board Game details
         const boardGameDetails = await getBoardGameDetails(id);
         if (boardGameDetails) {
-          // Note: boardGameDetails returns XML text from BGG
           setGame({
-            name: "Board Game #" + id,
-            description: boardGameDetails,
+            name: boardGameDetails.name,
+            description: boardGameDetails.description,
+            image: boardGameDetails.image,
             type: "Board Game",
           });
           setLoading(false);
@@ -58,7 +59,7 @@ function GameDetailPage() {
 
   return (
     <div className="game-detail-page">
-      <Link to="/" style={{ display: "inline-block", marginBottom: "1rem" }}>
+      <Link to="/" className="back-link">
         ← Back to Home
       </Link>
 
@@ -67,12 +68,22 @@ function GameDetailPage() {
 
       {!loading && !error && game && (
         <div className="game-detail-container">
-          <h1>{game.name}</h1>
-          {game.image && <img src={game.image} alt={game.name} style={{ maxWidth: "100%", borderRadius: "8px" }} />}
-          <p><strong>Type:</strong> {game.type}</p>
+          <h1 className="game-detail-title">{game.name}</h1>
+          
+          {game.image && (
+            <div className="game-image-wrapper">
+              <img 
+                src={game.image} 
+                alt={game.name} 
+                className="game-detail-img" 
+              />
+            </div>
+          )}
+
+          <p className="game-type-text"><strong>Type:</strong> {game.type}</p>
+          
           <div className="game-description">
             <h3>Description</h3>
-            {/* Using dangerouslySetInnerHTML if description contains HTML markup from API */}
             <div dangerouslySetInnerHTML={{ __html: game.description }} />
           </div>
         </div>

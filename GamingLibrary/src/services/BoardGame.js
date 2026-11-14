@@ -1,22 +1,69 @@
 // src/services/BoardGame.js
 
-const BGG_KEY = import.meta.env.VITE_BOARD_GAME_KEY;
+const BGG_TOKEN = import.meta.env.VITE_BOARD_GAME_KEY;
 
-export async function searchBoardGames(query) {
+export async function searchBoardGames(query = "") {
   try {
-    // If your BGG usage requires the key/token as a query param, you can append it like &token=...
-    const response = await fetch(
-      `https://boardgamegeek.com/xmlapi2/search?query=${encodeURIComponent(query)}&type=boardgame`
+    let response = await fetch(
+      `/bgg-api/xmlapi2/search?query=${encodeURIComponent(query)}&type=boardgame`,
+      {
+        headers: {
+          'Authorization': `Bearer ${BGG_TOKEN}`
+        }
+      }
     );
 
+    if (response.status === 202) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      response = await fetch(
+        `/bgg-api/xmlapi2/search?query=${encodeURIComponent(query)}&type=boardgame`,
+        {
+          headers: {
+            'Authorization': `Bearer ${BGG_TOKEN}`
+          }
+        }
+      );
+    }
+
     if (!response.ok) {
-      throw new Error("Failed to fetch board games");
+      throw new Error(`BGG API error: ${response.status}`);
     }
 
     const xmlText = await response.text();
-    return xmlText;
+    if (xmlText.includes("Please try again later")) {
+      return getFallbackBoardGames();
+    }
+
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+    const items = xmlDoc.getElementsByTagName("item");
+
+    const games = [];
+    const limit = Math.min(items.length, 10);
+    
+    for (let i = 0; i < limit; i++) {
+      const item = items[i];
+      const id = item.getAttribute("id");
+      const nameElem = item.getElementsByTagName("name")[0];
+      const name = nameElem ? nameElem.getAttribute("value") : "Unknown Board Game";
+      const yearElem = item.getElementsByTagName("yearpublished")[0];
+      const releaseDate = yearElem ? yearElem.getAttribute("value") : "N/A";
+
+      const fallbackMatch = getFallbackBoardGames().find(g => g.id === id);
+
+      games.push({
+        id,
+        name,
+        type: "Board Game",
+        image: fallbackMatch ? fallbackMatch.image : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ8wB7gSQyEIrBdZOhc3duFVi19Ib6YaWf7cpm8CWQAw&s",
+        rating: fallbackMatch ? fallbackMatch.rating : "N/A",
+        releaseDate
+      });
+    }
+
+    return games.length > 0 ? games : getFallbackBoardGames();
   } catch (error) {
-    console.warn("BGG API search blocked by CORS, using fallback board games list.");
+    console.warn("BGG search failed, using fallback list:", error);
     return getFallbackBoardGames();
   }
 }
@@ -24,29 +71,69 @@ export async function searchBoardGames(query) {
 export async function getBoardGameDetails(gameId) {
   try {
     const response = await fetch(
-      `https://boardgamegeek.com/xmlapi2/thing?id=${gameId}`
+      `/bgg-api/xmlapi2/thing?id=${gameId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${BGG_TOKEN}`
+        }
+      }
     );
 
     if (!response.ok) {
-      throw new Error("Failed to fetch board game details");
+      throw new Error(`BGG API error: ${response.status}`);
     }
 
     const xmlText = await response.text();
-    return xmlText;
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+    
+    const item = xmlDoc.getElementsByTagName("item")[0];
+    if (!item) throw new Error("Item not found in XML");
+
+    const nameElem = item.getElementsByTagName("name")[0];
+    const name = nameElem ? nameElem.getAttribute("value") : "Board Game #" + gameId;
+    
+    const descElem = item.getElementsByTagName("description")[0];
+    const description = descElem ? descElem.textContent : "No description available.";
+    
+    const imageElem = item.getElementsByTagName("image")[0];
+    let image = imageElem ? imageElem.textContent : "";
+
+    // If API didn't return an image, check fallback catalog
+    if (!image) {
+      const fallbackMatch = getFallbackBoardGames().find(g => String(g.id) === String(gameId));
+      image = fallbackMatch ? fallbackMatch.image : "";
+    }
+
+    return {
+      name,
+      description,
+      image,
+      type: "Board Game"
+    };
   } catch (error) {
-    console.warn("BGG details fetch blocked by CORS, using fallback details.");
-    return `<item id="${gameId}"><name type="primary" value="Board Game Details"/><description>This is a popular tabletop board game loaded from your discovery library catalog.</description></item>`;
+    console.warn("BGG details fetch failed, checking fallback details:", error);
+    const fallbackMatch = getFallbackBoardGames().find(g => String(g.id) === String(gameId));
+    if (fallbackMatch) {
+      return {
+        name: fallbackMatch.name,
+        description: `<strong>${fallbackMatch.name}</strong> is a classic tabletop board game released in ${fallbackMatch.releaseDate} with an average user rating of ${fallbackMatch.rating}/10. Enjoy strategic gameplay with friends and family!`,
+        image: fallbackMatch.image,
+        type: "Board Game"
+      };
+    }
+    return null;
   }
 }
 
-// Fallback dataset to ensure your board games page and home page populate smoothly
+// Fallback dataset using reliable image links so you don't get 400 errors
 export function getFallbackBoardGames() {
   return [
-    { id: "13", name: "Catan", type: "Board Game", image: "https://cf.geekdo-images.com/W3Bsga_uLP9kO91gZ7H8yw__itemrep/img/s7-D2oP154_8w9uC1Zq3sOqR0m8=/fit-in/246x300/filters:strip_icc()/pic2419375.jpg", rating: "7.2", releaseDate: "1995" },
-    { id: "30549", name: "Pandemic", type: "Board Game", image: "https://cf.geekdo-images.com/S3ybV1LAp-8SnHIXL3VqYQ__itemrep/img/1U48fU4zZz9P3M4R7J05v5k1V8Q=/fit-in/246x300/filters:strip_icc()/pic1534148.jpg", rating: "7.6", releaseDate: "2008" },
-    { id: "170416", name: "Scythe", type: "Board Game", image: "https://cf.geekdo-images.com/7k_nOxXSh9WVAEDQjH3mNg__itemrep/img/4j9C1M8T4gS1wZ6Xv8K72L9b2Qk=/fit-in/246x300/filters:strip_icc()/pic3163924.png", rating: "8.2", releaseDate: "2016" },
-    { id: "167791", name: "Terraforming Mars", type: "Board Game", image: "https://cf.geekdo-images.com/wg9oDD-o0pZj7DlOSEXrpw__itemrep/img/3m0O9sW8t6P3Q7V2Z1Y5K4L9b2Q=/fit-in/246x300/filters:strip_icc()/pic3539516.jpg", rating: "8.4", releaseDate: "2016" },
-    { id: "224517", name: "Brass: Birmingham", type: "Board Game", image: "https://cf.geekdo-images.com/xQdTvxAfLuunPgpOE90JIA__itemrep/img/9K4w2Z1Y5K4L9b2Qk7k_nOxXSh9W=/fit-in/246x300/filters:strip_icc()/pic3490053.jpg", rating: "8.6", releaseDate: "2018" },
-    { id: "233090", name: "Gloomhaven", type: "Board Game", image: "https://cf.geekdo-images.com/sZYp_3BTDGjhEpSVJEXelA__itemrep/img/2Z1Y5K4L9b2Qk7k_nOxXSh9WVAEDQ=/fit-in/246x300/filters:strip_icc()/pic2437871.jpg", rating: "8.7", releaseDate: "2017" }
+    { id: "13", name: "Catan", type: "Board Game", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ8wB7gSQyEIrBdZOhc3duFVi19Ib6YaWf7cpm8CWQAw&s", rating: "7.2", releaseDate: "1995" },
+    { id: "30549", name: "Pandemic", type: "Board Game", image: "https://cf.geekdo-images.com/S3ybV1LAp-8SnHIXLLjVqA__itemrep/img/wAMLbgihOl7dJDHnvqt7OXKEV-4=/fit-in/246x300/filters:strip_icc()/pic1534148.jpg", rating: "7.6", releaseDate: "2008" },
+    { id: "170416", name: "Scythe", type: "Board Game", image: "https://cf.geekdo-images.com/7k_nOxpO9OGIjhLq2BUZdA__itemrep/img/RVh5N-_HcMziJ3M6Q1eLTlj8XIQ=/fit-in/246x300/filters:strip_icc()/pic3163924.jpg", rating: "8.2", releaseDate: "2016" },
+    { id: "167791", name: "Terraforming Mars", type: "Board Game", image: "https://cf.geekdo-images.com/wg9oOLcsKvDesSUdZQ4rxw__itemrep/img/IwUOQfhP5c0KcRJBY4X_hi3LpsY=/fit-in/246x300/filters:strip_icc()/pic3536616.jpg", rating: "8.4", releaseDate: "2016" },
+    { id: "224517", name: "Brass: Birmingham", type: "Board Game", image: "https://cf.geekdo-images.com/x3zxjr-Vw5iU4yDPg70Jgw__itemrep/img/giNUMut4HAl-zWyQkGG0YchmuLI=/fit-in/246x300/filters:strip_icc()/pic3490053.jpg", rating: "8.6", releaseDate: "2018" },
+    { id: "233090", name: "Gloomhaven", type: "Board Game", image: "https://cf.geekdo-images.com/sZYp_3BTDGjh2unaZfZmuA__itemrep/img/0IdBRA_G-ZdrNaxI4Z1LPQMZD0I=/fit-in/246x300/filters:strip_icc()/pic2437871.jpg", rating: "8.7", releaseDate: "2017" }
   ];
 }

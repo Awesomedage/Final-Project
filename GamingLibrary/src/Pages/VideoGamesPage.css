@@ -1,0 +1,20 @@
+/* src/Pages/VideoGamesPage.css */
+
+.video-games-page {
+  padding: 1rem;
+}
+
+.video-games-error {
+  color: red;
+}
+
+@media (min-width: 768px) {
+  .video-games-page {
+    padding: 2rem;
+  }
+}
+@media (min-width: 1024px) {
+  .video-games-page {
+    padding: 3rem;
+  }
+}

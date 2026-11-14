@@ -1,4 +1,5 @@
 //AboutPage.jsx
+import './AboutPage.css';
 
 function AboutPage() {
   return (

@@ -17,7 +17,7 @@ function SavedPage() {
   }, []);
 
   return (
-    <div className="saved-page" style={{ padding: "1.5rem" }}>
+    <div className="saved-page">
       <h1>Your Saved Games</h1>
       {savedGames.length === 0 ? (
         <p>You haven't saved any games yet. Browse video games or board games to add some!</p>

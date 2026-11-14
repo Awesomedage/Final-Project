@@ -1,92 +1,46 @@
-// src/Pages/GameDetailPage.jsx
+// src/Pages/BoardGamesPage.jsx
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { getSteamGameDetails } from "../services/Steam";
-import { getBoardGameDetails } from "../services/BoardGame";
+import GameGrid from "../components/GameGrid";
+import LoadingSpinner from "../components/LoadingSpinner";
+import { searchBoardGames, getFallbackBoardGames } from "../services/BoardGame";
+import "./BoardGamesPage.css";
 
-function GameDetailPage() {
-  const { id } = useParams();
-  const [game, setGame] = useState(null);
+function BoardGamesPage() {
+  const [boardGames, setBoardGames] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function fetchGameDetails() {
-      setLoading(true);
-      setError(null);
-
+    async function fetchBoardGames() {
       try {
-        // 1. Try fetching Steam game details first
-        const steamGameDetails = await getSteamGameDetails(id);
-        if (steamGameDetails) {
-          setGame({
-            name: steamGameDetails.name,
-            description: steamGameDetails.short_description || steamGameDetails.detailed_description,
-            image: steamGameDetails.header_image,
-            type: "Video Game",
-          });
-          setLoading(false);
-          return;
-        }
-
-        // 2. Try fetching Board Game details
-        const boardGameDetailsXml = await getBoardGameDetails(id);
-        if (boardGameDetailsXml) {
-          // Simple XML parser helper to extract name and description for clean presentation
-          const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(boardGameDetailsXml, "text/xml");
-          
-          const nameElement = xmlDoc.querySelector("name[type='primary']") || xmlDoc.querySelector("name");
-          const descElement = xmlDoc.querySelector("description");
-
-          const gameName = nameElement ? nameElement.getAttribute("value") || nameElement.textContent : `Board Game #${id}`;
-          const gameDesc = descElement ? descElement.textContent : "No description available for this board game.";
-
-          setGame({
-            name: gameName,
-            description: gameDesc,
-            type: "Board Game",
-          });
-          setLoading(false);
-          return;
-        }
-
-        setError("Game not found");
+        setLoading(true);
+        // Hits BGG search endpoint first and falls back to getFallbackBoardGames() on queue/error
+        const data = await searchBoardGames("");
+        setBoardGames(data && data.length > 0 ? data : getFallbackBoardGames());
       } catch (err) {
-        console.error(err);
-        setError("Failed to fetch game details");
+        console.error("Error fetching board games:", err);
+        setBoardGames(getFallbackBoardGames());
       } finally {
         setLoading(false);
       }
     }
 
-    if (id) {
-      fetchGameDetails();
-    }
-  }, [id]);
+    fetchBoardGames();
+  }, []);
 
   return (
-    <div className="game-detail-page" style={{ padding: "2rem" }}>
-      <Link to="/" style={{ display: "inline-block", marginBottom: "1rem" }}>
-        ← Back to Home
-      </Link>
+    <div className="board-games-page">
+      <h1>Board Games Catalog</h1>
+      <p className="board-games-subtitle">
+        Explore top-rated tabletop games and strategy classics.
+      </p>
 
-      {loading && <p>Loading game details...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {!loading && !error && game && (
-        <div className="game-detail-container">
-          <h1>{game.name}</h1>
-          {game.image && <img src={game.image} alt={game.name} style={{ maxWidth: "100%", borderRadius: "8px", marginBottom: "1rem" }} />}
-          <p><strong>Type:</strong> {game.type}</p>
-          <div className="game-description" style={{ marginTop: "1.5rem" }}>
-            <h3>Description</h3>
-            <div dangerouslySetInnerHTML={{ __html: game.description }} />
-          </div>
-        </div>
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <GameGrid games={boardGames} />
       )}
     </div>
   );
 }
 
-export default GameDetailPage;
+export default BoardGamesPage;

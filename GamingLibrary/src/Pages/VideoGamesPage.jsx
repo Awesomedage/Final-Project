@@ -4,7 +4,7 @@ import GameGrid from "../components/GameGrid";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { getSteamGames } from "../services/Steam";
 
-function VideoGamesPage() {
+function VideoGamesPage({ searchQuery = "" }) {
   const [videoGames, setVideoGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,10 +27,10 @@ function VideoGamesPage() {
   }, []);
 
   return (
-    <div className="video-games-page" style={{ padding: "1rem" }}>
+    <div className="video-games-page">
       <h1>Video Games</h1>
       {loading && <LoadingSpinner />}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="video-games-error">{error}</p>}
       {!loading && !error && <GameGrid games={videoGames} />}
     </div>
   );

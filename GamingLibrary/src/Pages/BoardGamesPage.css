@@ -1,0 +1,20 @@
+.board-games-page {
+  padding: 1.5rem;
+}
+
+.board-games-subtitle {
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+@media (min-width: 768px) {
+  .board-games-page {
+    padding: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .board-games-page {
+    padding: 3rem;
+  }
+}

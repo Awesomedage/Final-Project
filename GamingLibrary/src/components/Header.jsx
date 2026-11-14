@@ -7,12 +7,13 @@ function Header({ onSearch }) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = () => {
-    if (searchQuery.trim() && onSearch) {
-      onSearch(searchQuery);
+    const trimmed = searchQuery.trim();
+    if (trimmed && onSearch) {
+      onSearch(trimmed);
     }
   };
-    
-  const handleKeyPress = (e) => {
+
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
@@ -32,7 +33,7 @@ function Header({ onSearch }) {
           className="search-input"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyDown}
         />
         <button className="search-button" onClick={handleSearch}>
           Search

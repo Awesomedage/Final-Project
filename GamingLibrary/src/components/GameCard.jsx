@@ -52,26 +52,12 @@ const [isSaved, setIsSaved] = useState(false);
         <Link 
           to={`/game/${id}`} 
           className="btn-details" 
-          style={{ padding: "0.4rem 0.8rem", 
-            background: "#007bff", 
-            color: "#fff", 
-            textDecoration: "none", 
-            borderRadius: "4px", 
-            fontSize: "0.9rem" }}
         >
           Details
         </Link>
         <button 
           onClick={handleSaveGame} 
-          style={{ 
-            padding: "0.4rem 0.8rem", 
-            background: isSaved ? "#dc3545" : "#28a745", 
-            color: "#fff", 
-            border: "none", 
-            borderRadius: "4px", 
-            cursor: "pointer",
-            fontSize: "0.9rem"
-          }}
+          className={`btn-save ${isSaved ? "btn-save-remove" : "btn-save-add"}`}
         >
           {isSaved ? "Unsave" : "Save Game"}
         </button>
