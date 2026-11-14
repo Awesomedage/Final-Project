@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import GameGrid from "../components/GameGrid";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { searchBoardGames, getFallbackBoardGames } from "../services/BoardGame";
+import { searchBoardGames} from "../services/BoardGame";
 import "./BoardGamesPage.css";
 
 function BoardGamesPage() {
@@ -13,7 +13,7 @@ function BoardGamesPage() {
     async function fetchBoardGames() {
       try {
         setLoading(true);
-        // Hits BGG search endpoint first and falls back to getFallbackBoardGames() on queue/error
+        // Hits BGG search endpoint first and falls back to getFallbackBoardGames() if no results are returned
         const data = await searchBoardGames("");
         setBoardGames(data && data.length > 0 ? data : getFallbackBoardGames());
       } catch (err) {

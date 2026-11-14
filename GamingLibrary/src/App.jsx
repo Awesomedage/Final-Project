@@ -18,7 +18,6 @@ function App() {
   const [allGames, setAllGames] = useState([]);
   const [liveBoardResults, setLiveBoardResults] = useState([]);
 
-  // Pre-load games so instant search filtering works smoothly on the homepage
   useEffect(() => {
     async function loadGames() {
       try {
@@ -49,7 +48,6 @@ function App() {
     }
   };
 
-  // Combine filtered pre-loaded games with live board game search matches (deduplicated by id)
   const searchResults = searchQuery.trim()
     ? Array.from(
         new Map(
@@ -74,7 +72,7 @@ function App() {
   return (
     <Router>
       <Header onSearch={handleSearch} />
-      <main style={{ minHeight: "80vh" }}>
+      <main className="main">
         <Routes>
           <Route path="/" element={<HomePage searchResults={searchResults} />} />
           <Route path="/video-games" element={<VideoGamesPage />} />

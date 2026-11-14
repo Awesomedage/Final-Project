@@ -21,7 +21,7 @@ function HomePage({ searchResults }) {
         const steamData = await getSteamGames();
         setVideoGames(steamData);
 
-        // Fetch board games via the live search service (defaults to Catan query)
+        // Fetch board games  
         const boardData = await searchBoardGames("");
         setBoardGames(boardData && boardData.length > 0 ? boardData : getFallbackBoardGames());
       } catch (err) {
@@ -61,7 +61,6 @@ function HomePage({ searchResults }) {
 
       <div className="homepage-sections">
         {searchResults ? (
-          /* When searching, show single search results view like the movie app reference */
           <div className="search-results-section">
             <div className="content-header">
               <h2>Search Results</h2>
@@ -74,7 +73,6 @@ function HomePage({ searchResults }) {
             )}
           </div>
         ) : (
-          /* When not searching, keep your separate categorized sections intact */
           <>
             <section className="top-video-games">
               <h2>Top Video Games</h2>
