@@ -44,38 +44,38 @@
 | Route | Page Component | Description & Key Features |
 | :--- | :--- | :--- |
 | `/` | `HomePage` | Displays the hero welcome banner, quick category navigation buttons, top video games, top board games, and unified search results. |
-| `/video-games` | `VideoGamesPage` | Fetches and displays a grid of PC video games from the Steam service with loading and error states[cite: 8]. |
-| `/board-games` | `BoardGamesPage` | Fetches and displays tabletop board games from BoardGameGeek with automatic fallback data[cite: 5]. |
-| `/game/:id` | `GameDetailPage` | Dynamically resolves game details by ID across Steam and BoardGameGeek services, displaying cover art, game type, and HTML descriptions[cite: 6]. |
-| `/saved` | `SavedPage` | Reads from `localStorage` to display all games the user has bookmarked, or an empty-state prompt if none are saved[cite: 7]. |
+| `/video-games` | `VideoGamesPage` | Fetches and displays a grid of PC video games from the Steam service with loading and error states. |
+| `/board-games` | `BoardGamesPage` | Fetches and displays tabletop board games from BoardGameGeek with automatic fallback data. |
+| `/game/:id` | `GameDetailPage` | Dynamically resolves game details by ID across Steam and BoardGameGeek services, displaying cover art, game type, and HTML descriptions. |
+| `/saved` | `SavedPage` | Reads from `localStorage` to display all games the user has bookmarked, or an empty-state prompt if none are saved. |
 | `/about` | `AboutPage` | Displays information about the Gaming Library application. |
 
 ### Core Application Features
-* **Global Search Bar (`Header`):** Allows users to submit queries via the Search button or `Enter` key to filter games from the home view[cite: 9].
-* **Interactive Game Cards (`GameCard`):** Displays cover artwork, title, game type (`Video Game` or `Board Game`), release date/year, rating, a link to `/game/:id`, and a toggleable **Save Game / Unsave** button synced with `localStorage`[cite: 10].
-* **Responsive Layout:** Uses CSS Grid (`auto-fill`, `minmax(220px, 1fr)`) for game cards and responsive breakpoints (`768px` and `1024px`) for page padding[cite: 4, 13].
+* **Global Search Bar (`Header`):** Allows users to submit queries via the Search button or `Enter` key to filter games from the home view.
+* **Interactive Game Cards (`GameCard`):** Displays cover artwork, title, game type (`Video Game` or `Board Game`), release date/year, rating, a link to `/game/:id`, and a toggleable **Save Game / Unsave** button synced with `localStorage`.
+* **Responsive Layout:** Uses CSS Grid (`auto-fill`, `minmax(220px, 1fr)`) for game cards and responsive breakpoints (`768px` and `1024px`) for page padding.
 
 ---
 
 ## API Documentation and Dependencies
 
 ### External APIs & Vite Proxy Configuration
-To avoid browser CORS restrictions during local development, `vite.config.js` proxies requests to two external gaming APIs[cite: 3]:
+To avoid browser CORS restrictions during local development, `vite.config.js` proxies requests to two external gaming APIs:
 
 1. **Steam Store API**
-   * **Proxy Path:** `/steam-api` $\rightarrow$ `https://store.steampowered.com`[cite: 3]
+   * **Proxy Path:** `/steam-api` $\rightarrow$ `https://store.steampowered.com`
    * **Service Module:** `src/services/Steam.js`
    * **Methods:**
-     * `getSteamGames()` — Fetches featured/popular video games[cite: 8].
-     * `getSteamGameDetails(id)` — Retrieves detailed metadata (`name`, `short_description`, `detailed_description`, `header_image`) for a specific Steam App ID[cite: 6].
+     * `getSteamGames()` — Fetches featured/popular video games.
+     * `getSteamGameDetails(id)` — Retrieves detailed metadata (`name`, `short_description`, `detailed_description`, `header_image`) for a specific Steam App ID.
 
 2. **BoardGameGeek (BGG) XML API**
-   * **Proxy Path:** `/bgg-api` $\rightarrow$ `https://boardgamegeek.com`[cite: 3]
+   * **Proxy Path:** `/bgg-api` $\rightarrow$ `https://boardgamegeek.com`
    * **Service Module:** `src/services/BoardGame.js`
    * **Methods:**
-     * `searchBoardGames(query)` — Queries BGG for tabletop titles matching the search term[cite: 2, 5].
-     * `getBoardGameDetails(id)` — Retrieves detailed board game information (`name`, `description`, `image`) by BGG ID[cite: 6].
-     * `getFallbackBoardGames()` — Returns a curated local fallback list of board games if the BGG API queues or fails to respond[cite: 5].
+     * `searchBoardGames(query)` — Queries BGG for tabletop titles matching the search term.
+     * `getBoardGameDetails(id)` — Retrieves detailed board game information (`name`, `description`, `image`) by BGG ID.
+     * `getFallbackBoardGames()` — Returns a curated local fallback list of board games if the BGG API queues or fails to respond.
 
 ### Key Package Dependencies
 * `react` & `react-dom`
@@ -87,19 +87,23 @@ To avoid browser CORS restrictions during local development, `vite.config.js` pr
 
 ## Deployment URL and Instructions
 
-* **Live Deployment URL:** `[Insert Your Live Vercel / Netlify / GitHub Pages URL Here]`
+* **Live Deployment URL:** `git clone <your-repository-url>
+cd GamingLibrary`
 
-### Deployment Instructions (Vercel / Netlify)
+### Deployment Instructions
 1. Push your project repository to GitHub.
-2. Import the repository into your hosting provider (e.g., Vercel or Netlify).
-3. Configure the build settings:
-   * **Build Command:** `npm run build`
-   * **Output Directory:** `dist`
-4. Configure production rewrites/redirects for `/steam-api/*` and `/bgg-api/*` (matching the proxy targets in `vite.config.js`[cite: 3]) as well as SPA fallback routing (`/*` $\rightarrow$ `/index.html`) so direct visits to routes like `/saved` or `/game/:id` resolve properly.
+2. Import the repository into Vercel
+3. Add .env with your repository
+4. click "deploy"
 
 ---
 
 ## Screenshots
+
+Video games Page:<img width="2256" height="1534" alt="image" src="https://github.com/user-attachments/assets/84067b05-c0ed-404c-aa1d-e9b02a743f7d" />
+Board games Page: <img width="2180" height="1402" alt="image" src="https://github.com/user-attachments/assets/4eeda16f-0e70-4132-8ccf-18b60e9a3b6a" />
+Saved games page:<img width="2232" height="1054" alt="image" src="https://github.com/user-attachments/assets/643d4d77-ef75-45c5-972f-b9919d50abc1" />
+details page: <img width="2246" height="1224" alt="image" src="https://github.com/user-attachments/assets/4f58156a-b483-4ffc-9f16-b959f465bb09" />
 
 
 ---
@@ -113,6 +117,6 @@ To avoid browser CORS restrictions during local development, `vite.config.js` pr
 
 ## Upcoming Future Enhancement Plans
 * **Unified Cross-Platform Search:** Expand live search queries to hit both the Steam Store API and BoardGameGeek API simultaneously and strictly bind image URLs per game ID.
-* **Filtering and Sorting Controls:**  I plan on creating a filter to  
+* **Filtering and Sorting Controls:**  I plan on creating a filter and sorting feature to help users find gaming reataining to a specific genre
 * **User Accounts & Login system:** I plan on adding a login system and user accounts, so your saved list will be saved.
 
