@@ -55,7 +55,7 @@
 
 ### Core Application Features
 * **Global Search Bar (`Header`):** Allows users to submit queries via the Search button or `Enter` key to filter games from the home view.
-* **Interactive Game Cards (`GameCard`):** Displays cover artwork, title, game type (`Video Game` or `Board Game`), release date/year, rating, a link to `/game/:id`, and a toggleable **Save Game / Unsave** button synced with `localStorage`.
+* **Interactive Game Cards (`GameCard`):** Displays cover artwork, title, game type (`Video Game` or `Board Game`), release date/year, rating, and a toggleable **Save Game / Unsave** button synced with `localStorage`.
 * **Responsive Layout:** Uses CSS Grid (`auto-fill`, `minmax(220px, 1fr)`) for game cards and responsive breakpoints (`768px` and `1024px`) for page padding.
 
 ---
