@@ -19,7 +19,7 @@
 
 1. **Clone the repository:**
    ```bash
-   git clone <[your-repository-(https://finalproject-gaminglibrary.vercel.app/)>
+   git clone "https://github.com/Awesomedage/Final-Project.git"
    cd GamingLibrary
    ```
 
