@@ -19,7 +19,7 @@
 
 1. **Clone the repository:**
    ```bash
-   git clone <your-repository-url>
+   git clone <[your-repository-(https://finalproject-gaminglibrary.vercel.app/)>
    cd GamingLibrary
    ```
 
@@ -87,8 +87,7 @@ To avoid browser CORS restrictions during local development, `vite.config.js` pr
 
 ## Deployment URL and Instructions
 
-* **Live Deployment URL:** `git clone <your-repository-url>
-cd GamingLibrary`
+* **Live Deployment URL:** https://finalproject-gaminglibrary.vercel.app/
 
 ### Deployment Instructions
 1. Push your project repository to GitHub.
@@ -116,7 +115,6 @@ details page: <img width="2246" height="1224" alt="image" src="https://github.co
 ---
 
 ## Upcoming Future Enhancement Plans
-* **Unified Cross-Platform Search:** Expand live search queries to hit both the Steam Store API and BoardGameGeek API simultaneously and strictly bind image URLs per game ID.
 * **Filtering and Sorting Controls:**  I plan on creating a filter and sorting feature to help users find gaming reataining to a specific genre
-* **User Accounts & Login system:** I plan on adding a login system and user accounts, so your saved list will be saved.
+* **User Accounts & Login system:** I plan on adding a login system and user accounts, so your saved list will be saved and other users can't see it.
 
