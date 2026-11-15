@@ -23,10 +23,13 @@
    cd GamingLibrary
    ```
 
-2. **Install dependencies:**
+2. **Install:**
    ```bash
    npm install
    ```
+3. **Run code**
+   ```bash
+   npm code .
 
 3. **Start the local development server:**
    ```bash
